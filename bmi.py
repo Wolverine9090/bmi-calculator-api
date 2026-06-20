@@ -34,7 +34,7 @@ def calculate_bmi(details : PersonDetail):
     elif 25 <= bmi <= 29.9:
         bmi_category = "Overweight"
     else:
-        bmi_category = "Obese"
+        bmi_category = "Obesity"
     return {
         "Name" : f"{details.first_name} {details.last_name}",
         "bmi" : bmi,
