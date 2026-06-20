@@ -1,59 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚖️</text></svg>">
+<meta charset="UTF-8">
+<title>BMI Calculator</title>
+<style>
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #f0f4ff 0%, #e8f5f0 50%, #fdf2e8 100%);
+    background-size: 200% 200%;
+    animation: gradientShift 12s ease infinite;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  .card {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+    width: 360px;
+    animation: floatIn 0.5s ease;
+    transition: box-shadow 0.3s ease;
+  }
+  .card:hover {
+    box-shadow: 0 14px 48px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.05);
+  }
+  @keyframes floatIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  h2 {
+    margin-top: 0;
+    text-align: center;
+    color: #222;
+  }
+  label {
+    font-size: 13px;
+    color: #555;
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  input {
+    width: 100%;
+    padding: 9px 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  input:focus {
+    outline: none;
+    border-color: #6c8ef5;
+    box-shadow: 0 0 0 3px rgba(108,142,245,0.15);
+  }
+  button {
+    width: 100%;
+    padding: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    background: #222;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.2s ease;
+  }
+  button:hover:not(:disabled) {
+    background: #000;
+    transform: translateY(-1px);
+  }
+  button:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+  button:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+  #error {
+    display: none;
+    margin-top: 14px;
+    padding: 10px 14px;
+    background: #fdecea;
+    border: 1px solid #f5c2c0;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #b3261e;
+    animation: shake 0.3s ease;
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+  }
+  #result {
+    display: none;
+    margin-top: 18px;
+    padding: 16px;
+    background: #f9f9f9;
+    border-radius: 10px;
+    border: 1px solid #ececec;
+    animation: floatIn 0.4s ease;
+  }
+  .result-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  #result_name {
+    font-size: 14px;
+    color: #555;
+    font-weight: 600;
+    margin: 0;
+  }
+  #result_badge {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 8px;
+  }
+  .bmi-value {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  #result_bmi {
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .bar-track {
+    height: 8px;
+    background: #e6e6e6;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  #result_bar {
+    height: 100%;
+    border-radius: 4px;
+    width: 0%;
+    transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .scale {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6px;
+    font-size: 11px;
+    color: #999;
+  }
+  .footer-note {
+    font-size: 11px;
+    color: #aaa;
+    text-align: center;
+    margin: 18px 0 0;
+  }
+</style>
+</head>
+<body>
 
-<h2 class="sr-only">BMI Calculator — enter your details to calculate your Body Mass Index</h2>
+<div class="card">
+  <h2>BMI Calculator</h2>
 
-<div style="max-width: 480px; margin: 2rem auto; padding: 0 1rem;">
-  <div style="background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1.5rem;">
-    <div style="margin-bottom: 1.5rem;">
-      <p style="font-size: 22px; font-weight: 500; margin: 0 0 4px;">BMI Calculator</p>
-      <p style="font-size: 14px; color: var(--color-text-secondary); margin: 0;">Enter your details to calculate your Body Mass Index</p>
+  <div class="row">
+    <div>
+      <label>First name</label>
+      <input type="text" id="first_name" placeholder="Satyaki">
     </div>
-
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
-      <div>
-        <label style="font-size: 13px; color: var(--color-text-secondary); display: block; margin-bottom: 4px;">First name</label>
-        <input type="text" id="first_name" placeholder="Satyaki" style="width: 100%; box-sizing: border-box;">
-      </div>
-      <div>
-        <label style="font-size: 13px; color: var(--color-text-secondary); display: block; margin-bottom: 4px;">Last name</label>
-        <input type="text" id="last_name" placeholder="Patra" style="width: 100%; box-sizing: border-box;">
-      </div>
-    </div>
-
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1.25rem;">
-      <div>
-        <label style="font-size: 13px; color: var(--color-text-secondary); display: block; margin-bottom: 4px;">Weight (kg)</label>
-        <input type="number" id="weight_kg" placeholder="70" step="0.1" style="width: 100%; box-sizing: border-box;">
-      </div>
-      <div>
-        <label style="font-size: 13px; color: var(--color-text-secondary); display: block; margin-bottom: 4px;">Height (m)</label>
-        <input type="number" id="height_m" placeholder="1.75" step="0.01" style="width: 100%; box-sizing: border-box;">
-      </div>
-    </div>
-
-    <button id="calcBtn" onclick="calculateBMI()" style="width: 100%; padding: 10px; font-size: 15px; cursor: pointer;">
-      Calculate BMI
-    </button>
-
-    <div id="error" style="display: none; margin-top: 12px; padding: 10px 14px; background: var(--color-background-danger); border: 0.5px solid var(--color-border-danger); border-radius: var(--border-radius-md); font-size: 14px; color: var(--color-text-danger);"></div>
-
-    <div id="result" style="display: none; margin-top: 1rem; padding: 1rem; background: var(--color-background-secondary); border-radius: var(--border-radius-md);">
-      <p style="font-size: 13px; color: var(--color-text-secondary); margin: 0 0 8px;" id="result_name"></p>
-      <div style="display: flex; align-items: baseline; gap: 10px; margin-bottom: 8px;">
-        <span style="font-size: 36px; font-weight: 500;" id="result_bmi"></span>
-        <span id="result_badge" style="font-size: 13px; font-weight: 500; padding: 3px 10px; border-radius: var(--border-radius-md);"></span>
-      </div>
-      <div style="height: 6px; background: var(--color-border-tertiary); border-radius: 3px; overflow: hidden;">
-        <div id="result_bar" style="height: 100%; border-radius: 3px; transition: width 0.4s ease;"></div>
-      </div>
-      <div style="display: flex; justify-content: space-between; margin-top: 4px;">
-        <span style="font-size: 11px; color: var(--color-text-tertiary);">0</span>
-        <span style="font-size: 11px; color: var(--color-text-tertiary);">18.5</span>
-        <span style="font-size: 11px; color: var(--color-text-tertiary);">25</span>
-        <span style="font-size: 11px; color: var(--color-text-tertiary);">30</span>
-        <span style="font-size: 11px; color: var(--color-text-tertiary);">40+</span>
-      </div>
+    <div>
+      <label>Last name</label>
+      <input type="text" id="last_name" placeholder="Patra">
     </div>
   </div>
+
+  <div class="row">
+    <div>
+      <label>Weight (kg)</label>
+      <input type="number" id="weight_kg" placeholder="70" step="0.1">
+    </div>
+    <div>
+      <label>Height (m)</label>
+      <input type="number" id="height_m" placeholder="1.75" step="0.01">
+    </div>
+  </div>
+
+  <button id="calcBtn" onclick="calculateBMI()">Calculate BMI</button>
+
+  <div id="error"></div>
+
+  <div id="result">
+    <div class="result-header">
+      <p id="result_name"></p>
+      <span id="result_badge"></span>
+    </div>
+    <div class="bmi-value">
+      <span id="result_bmi"></span>
+      <span style="font-size:14px;color:#999;">BMI</span>
+    </div>
+    <div class="bar-track">
+      <div id="result_bar"></div>
+    </div>
+    <div class="scale">
+      <span>0</span><span>18.5</span><span>25</span><span>30</span><span>40+</span>
+    </div>
+  </div>
+
+  <p class="footer-note">Built with FastAPI · Hosted on Render</p>
 </div>
 
 <script>
@@ -68,8 +238,8 @@ async function calculateBMI() {
   errorDiv.style.display = 'none';
   resultDiv.style.display = 'none';
 
-  if (!first_name || !last_name || isNaN(weight_kg) || isNaN(height_m)) {
-    errorDiv.textContent = 'Please fill in all fields correctly.';
+  if (!first_name || !last_name || isNaN(weight_kg) || isNaN(height_m) || weight_kg <= 0 || height_m <= 0) {
+    errorDiv.textContent = 'Please fill in all fields with valid values.';
     errorDiv.style.display = 'block';
     return;
   }
@@ -85,6 +255,8 @@ async function calculateBMI() {
       body: JSON.stringify({ first_name, last_name, weight_kg, height_m })
     });
 
+    if (!response.ok) throw new Error('API error');
+
     const data = await response.json();
 
     document.getElementById('result_name').textContent = data.Name;
@@ -96,33 +268,26 @@ async function calculateBMI() {
     const bmi = data.bmi;
 
     const barPct = Math.min((bmi / 40) * 100, 100).toFixed(1);
-    bar.style.width = barPct + '%';
 
-    if (category === 'Underweight') {
-      badge.textContent = 'Underweight';
-      badge.style.background = 'var(--color-background-info)';
-      badge.style.color = 'var(--color-text-info)';
-      bar.style.background = '#378ADD';
-    } else if (category === 'Normal') {
-      badge.textContent = 'Normal';
-      badge.style.background = 'var(--color-background-success)';
-      badge.style.color = 'var(--color-text-success)';
-      bar.style.background = '#639922';
-    } else if (category === 'Overweight') {
-      badge.textContent = 'Overweight';
-      badge.style.background = 'var(--color-background-warning)';
-      badge.style.color = 'var(--color-text-warning)';
-      bar.style.background = '#EF9F27';
-    } else {
-      badge.textContent = 'Obese';
-      badge.style.background = 'var(--color-background-danger)';
-      badge.style.color = 'var(--color-text-danger)';
-      bar.style.background = '#E24B4A';
-    }
+    const styles = {
+      'Underweight': { bg: '#e8f1fb', text: '#185fa5', bar: '#378ADD' },
+      'Normal': { bg: '#eef6e3', text: '#3b6d11', bar: '#639922' },
+      'Overweight': { bg: '#fdf2e0', text: '#854f0b', bar: '#EF9F27' },
+      'Obese': { bg: '#fcebeb', text: '#a32d2d', bar: '#E24B4A' }
+    };
+
+    const s = styles[category] || styles['Normal'];
+    badge.textContent = category;
+    badge.style.background = s.bg;
+    badge.style.color = s.text;
+    bar.style.background = s.bar;
 
     resultDiv.style.display = 'block';
+    requestAnimationFrame(() => {
+      bar.style.width = barPct + '%';
+    });
   } catch (err) {
-    errorDiv.textContent = 'Could not connect to the API. Make sure it is running.';
+    errorDiv.textContent = 'Could not connect to the API. It may be waking up — try again in 30 seconds.';
     errorDiv.style.display = 'block';
   }
 
@@ -130,3 +295,6 @@ async function calculateBMI() {
   btn.disabled = false;
 }
 </script>
+
+</body>
+</html>
