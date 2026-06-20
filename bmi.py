@@ -20,7 +20,7 @@ class PersonDetail(BaseModel):
 
     @field_validator("first_name", "last_name")
     def name_validator(cls, value):
-        return value.strip().lower()
+        return value.strip().title()
 
 
 @app.post("/bmi")
