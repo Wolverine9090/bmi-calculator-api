@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
 app = FastAPI()
 
@@ -16,12 +16,17 @@ class PersonDetail(BaseModel):
     first_name : str
     last_name : str
     weight_kg : float
-    height_m : float
+    height_cm : float
+
+    @field_validator("first_name", "last_name")
+    def name_validator(cls, value):
+        return value.strip().lower()
 
 
 @app.post("/bmi")
 def calculate_bmi(details : PersonDetail):
-    bmi = round(details.weight_kg / (details.height_m * details.height_m),2)
+    height_m = details.height_cm / 100
+    bmi = round(details.weight_kg / (height_m * height_m),2)
     if bmi < 18.5:
         bmi_category = "Underweight"
     elif 18.5 <= bmi <= 24.9:
