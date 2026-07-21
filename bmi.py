@@ -1,8 +1,12 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, field_validator, Field
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 
 app = FastAPI()
+
+templates = Jinja2Templates(directory="templates")
 
 app.add_middleware(
     CORSMiddleware,
@@ -15,12 +19,24 @@ app.add_middleware(
 class PersonDetail(BaseModel):
     first_name : str
     last_name : str
-    weight_kg : float
-    height_cm : float
+    weight_kg : float = Field(gt= 0, le= 500)
+    height_cm : float = Field(gt= 0, le= 300)
 
     @field_validator("first_name", "last_name")
     def name_validator(cls, value):
-        return value.strip().title()
+        value=  value.strip().title()
+        if value is None:
+            return ValueError("Name Cannot be empty")
+        return value
+
+
+@app.get("/", response_class=HTMLResponse)
+async def home(request: Request):
+    return templates.TemplateResponse(
+        "bmi_calculator_frontend.html",
+        {"request": request}
+    )
+
 
 
 @app.post("/bmi")
