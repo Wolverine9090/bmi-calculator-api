@@ -24,17 +24,17 @@ class PersonDetail(BaseModel):
 
     @field_validator("first_name", "last_name")
     def name_validator(cls, value):
-        value=  value.strip().title()
-        if value is None:
-            return ValueError("Name Cannot be empty")
-        return value
+        value = value.strip()
+        if not value:
+            raise ValueError("Name cannot be empty")
+        return value.title()
 
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     return templates.TemplateResponse(
-        "bmi_calculator_frontend.html",
-        {"request": request}
+        request=request,
+        name="bmi_calculator_frontend.html"
     )
 
 
